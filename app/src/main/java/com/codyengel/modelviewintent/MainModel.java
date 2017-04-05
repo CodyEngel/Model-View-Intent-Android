@@ -1,8 +1,7 @@
 package com.codyengel.modelviewintent;
 
-import java.util.Map;
-
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * @author cody
@@ -11,33 +10,38 @@ class MainModel {
 
     private final String defaultText = "Default Text";
 
+    private PublishSubject<MainModel> modelObservable;
+
     private String text;
 
-    private Map<String, Consumer> consumers;
+    private boolean wasReset = true;
 
-    MainModel(Map<String, Consumer> consumers) {
-        this.consumers = consumers;
+    MainModel() {
+        this.modelObservable = PublishSubject.create();
         resetText();
     }
 
-    @SuppressWarnings("unchecked")
+    Observable<MainModel> getObservable() {
+        return modelObservable;
+    }
+
     void changeText(String text) {
+        this.wasReset = false;
         this.text = text;
-        try {
-            consumers.get("TextView").accept(text);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.modelObservable.onNext(this);
     }
 
-    @SuppressWarnings("unchecked")
     void resetText() {
+        this.wasReset = true;
         this.text = defaultText;
-        try {
-            consumers.get("EditText").accept(text);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.modelObservable.onNext(this);
     }
 
+    String getText() {
+        return text;
+    }
+
+    boolean wasReset() {
+        return wasReset;
+    }
 }

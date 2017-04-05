@@ -6,10 +6,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding2.view.RxView;
+import com.codyengel.modelviewintent.actions.Action;
+import com.codyengel.modelviewintent.actions.ClickAction;
+import com.codyengel.modelviewintent.actions.TextChangeAction;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -21,6 +25,9 @@ import io.reactivex.functions.Consumer;
  * @author cody
  */
 public class MainActivity extends AppCompatActivity implements MainView {
+
+    public static final Integer BUTTON_IDENTIFIER = R.id.button;
+    public static final Integer EDIT_TEXT_IDENTIFIER = R.id.editText;
 
     @BindView(R.id.button) Button button;
     @BindView(R.id.editText) EditText editText;
@@ -36,10 +43,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public Map<String, Observable> getActions() {
-        Map<String, Observable> actions = new HashMap<>();
-        actions.put("Button", RxView.clicks(button));
-        actions.put("EditText", RxTextView.textChanges(editText));
+    public List<Observable<Action>> getActions() {
+        List<Observable<Action>> actions = new ArrayList<>();
+        actions.add(ClickAction.register(button, BUTTON_IDENTIFIER));
+        actions.add(TextChangeAction.register(editText, EDIT_TEXT_IDENTIFIER));
         return actions;
     }
 
