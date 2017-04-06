@@ -13,30 +13,33 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.codyengel.modelviewintent.actions;
+package com.codyengel.modelviewintent.utils;
 
-import android.widget.TextView;
-
-import com.jakewharton.rxbinding2.widget.RxTextView;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author cody
  */
 
-public class TextChangeAction {
+public class DisposableManager {
 
-    public static Observable<Action> register(TextView textView, Integer viewIdentifier) {
-        return RxTextView.textChanges(textView).map(textChange -> {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("text_change", textChange);
-            return new Action(Action.Type.TEXT_CHANGE, viewIdentifier, payload);
-        });
+    private static CompositeDisposable compositeDisposable;
+
+    public static void add(Disposable disposable) {
+        getCompositeDisposable().add(disposable);
     }
 
-    private TextChangeAction() {}
+    public static void dispose() {
+        getCompositeDisposable().dispose();
+    }
+
+    private static CompositeDisposable getCompositeDisposable() {
+        if (compositeDisposable == null) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        return compositeDisposable;
+    }
+
+    private DisposableManager() {}
 }

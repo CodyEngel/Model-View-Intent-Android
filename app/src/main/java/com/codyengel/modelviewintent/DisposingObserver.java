@@ -13,30 +13,32 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.codyengel.modelviewintent.actions;
+package com.codyengel.modelviewintent;
 
-import android.widget.TextView;
+import android.support.annotation.CallSuper;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.codyengel.modelviewintent.utils.DisposableManager;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author cody
  */
 
-public class TextChangeAction {
-
-    public static Observable<Action> register(TextView textView, Integer viewIdentifier) {
-        return RxTextView.textChanges(textView).map(textChange -> {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("text_change", textChange);
-            return new Action(Action.Type.TEXT_CHANGE, viewIdentifier, payload);
-        });
+public class DisposingObserver<T> implements Observer<T> {
+    @Override
+    @CallSuper
+    public void onSubscribe(Disposable d) {
+        DisposableManager.add(d);
     }
 
-    private TextChangeAction() {}
+    @Override
+    public void onNext(T next) {}
+
+    @Override
+    public void onError(Throwable e) {}
+
+    @Override
+    public void onComplete() {}
 }
